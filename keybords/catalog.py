@@ -1,42 +1,42 @@
-from sys import prefix
-
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 
 class CategoryCBData(CallbackData, prefix = "category"):
-    category: str
+    category_id: int
 
 class BookCBdata(CallbackData, prefix = "book"):
     id: int
-    category: str
+
+class BuyCBdata(CallbackData, prefix = "buy"):
+    id: int
 
 
 
-def generate_catalog_kb(catalog):
+def generate_catalog_kb(categories):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
 
-    for category_cb, category_name in catalog.items():
+    for category in categories:
         keyboard.inline_keyboard.append(
             [
                 InlineKeyboardButton(
-                    text=category_name["text"],
-                    callback_data=CategoryCBData(category=category_cb).pack()
+                    text=category.name,
+                    callback_data=CategoryCBData(category_id=category.id).pack()
                 )
             ]
         )
 
     return keyboard
 
-def generate_books_kb(books, category):
+def generate_books_kb(books):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
 
     for book in books:
         keyboard.inline_keyboard.append(
             [
                 InlineKeyboardButton(
-                    text=book["name"].format(book['id']),
-                    callback_data=BookCBdata(id = book['id'], category=category).pack()
+                    text=book.name,
+                    callback_data=BookCBdata(id = book.id).pack()
                 )
             ]
         )
@@ -48,12 +48,18 @@ def generate_books_kb(books, category):
 
     return keyboard
 
-def back_to_category_books(category):
+def back_to_category_books(book_id, category_id):
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(
+                text="Купить",
+                callback_data=BuyCBdata(id=book_id).pack()
+                                 )
+        ],
+        [
+            InlineKeyboardButton(
             text="<<< Назад",
-            callback_data=CategoryCBData(category=category).pack()
+            callback_data=CategoryCBData(category_id=category_id).pack()
         )
         ]
     ]
