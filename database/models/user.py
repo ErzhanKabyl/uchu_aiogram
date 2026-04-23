@@ -10,4 +10,9 @@ class User(BaseModel):
 
     username : Mapped[str | None]
     fullname : Mapped[str]
+    balance : Mapped[int] = mapped_column(default=0)
+
+    @property
+    def view_balance(self):
+        return round(self.balance/100, 4)
 

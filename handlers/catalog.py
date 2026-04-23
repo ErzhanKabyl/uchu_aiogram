@@ -1,8 +1,14 @@
 from aiogram import F, Router, types
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from keybords.catalog import generate_catalog_kb, CategoryCBData, generate_books_kb, BookCBdata, back_to_category_books
+
+from filters.check_buy_item import FilterUserCanBuyBook
+from handlers.profile import user_deposit_action
+from keybords.catalog import generate_catalog_kb, CategoryCBData, generate_books_kb, BookCBdata, back_to_category_books, \
+    BuyCBdata
 from repositories.books import BookRepo
 from repositories.categories import CategoryRepo
+from repositories.user import UserRepo
+
 catalog_router = Router()
 
 
@@ -57,7 +63,21 @@ async def book_info(
     await callback.message.edit_text(
         f"Название - {book.name}\n "
         f"Описание - {book.description}\n" 
-        f"Цена - {book.price} тг.\n\n"
+        f"Цена - {round(book.price/100, 2)} тг.\n\n"
         "Хотите приобрести?",
         reply_markup=back_to_category_books(book.id, book.category_id)
     )
+
+
+# @catalog_router.callback_query(FilterUserCanBuyBook(),BuyCBdata.filter())
+# async def buy_book_action(
+#         callback:CallbackQuery,
+#         callback_data:BuyCBdata,
+#         book_repo:BookRepo,
+#         user_repo:UserRepo,
+# ):
+#     book = await book_repo.get_book_by_id(callback_data.id)
+#     await user_repo.update_balance(callback.from_user.id, -book.price)
+#     await callback.message.answer(f'Книга {book.name} успешно куплена!')
+#
+#     await callback.answer()

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.models.user import User
 
@@ -25,3 +25,14 @@ class UserRepo:
 
         await self.__session.commit()
 
+
+
+    async def update_balance(self, tg_id: int, amount: int):
+        # amount = amount*100
+
+        statement = update(User).where(User.tg_id == tg_id).values(
+            balance=User.balance+amount
+        )
+        # user = await self.get_user_by_tg_id(tg_id)
+        await self.__session.execute(statement)
+        await self.__session.commit()
