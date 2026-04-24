@@ -69,15 +69,15 @@ async def book_info(
     )
 
 
-# @catalog_router.callback_query(FilterUserCanBuyBook(),BuyCBdata.filter())
-# async def buy_book_action(
-#         callback:CallbackQuery,
-#         callback_data:BuyCBdata,
-#         book_repo:BookRepo,
-#         user_repo:UserRepo,
-# ):
-#     book = await book_repo.get_book_by_id(callback_data.id)
-#     await user_repo.update_balance(callback.from_user.id, -book.price)
-#     await callback.message.answer(f'Книга {book.name} успешно куплена!')
-#
-#     await callback.answer()
+@catalog_router.callback_query(BuyCBdata.filter(),FilterUserCanBuyBook())
+async def buy_book_action(
+        callback:CallbackQuery,
+        callback_data:BuyCBdata,
+        book_repo:BookRepo,
+        user_repo:UserRepo,
+):
+    book = await book_repo.get_book_by_id(callback_data.id)
+    await user_repo.update_balance(callback.from_user.id, -book.price)
+    await callback.message.answer(f'Книга {book.name} успешно куплена!')
+
+    await callback.answer()
